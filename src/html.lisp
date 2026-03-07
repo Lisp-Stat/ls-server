@@ -81,9 +81,9 @@ and loads full plots in the main panel on click (no page navigation)."
       (:meta :charset "utf-8")
       (:title "Plots — Lisp-Stat Server")
        (:link :rel "icon" :type "image/svg+xml" :href *favicon-svg*)
-      (:script :src "https://cdn.jsdelivr.net/npm/vega@5")
-      (:script :src "https://cdn.jsdelivr.net/npm/vega-lite@5")
-      (:script :src "https://cdn.jsdelivr.net/npm/vega-embed@6")
+      (:script :src "https://cdn.jsdelivr.net/npm/vega@6")
+      (:script :src "https://cdn.jsdelivr.net/npm/vega-lite@6")
+      (:script :src "https://cdn.jsdelivr.net/npm/vega-embed@7")
       (:style (cl-who:str *plots-spa-css*)))
      (:body
       (:div :class "top-bar"
