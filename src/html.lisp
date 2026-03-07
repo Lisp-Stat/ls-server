@@ -114,7 +114,7 @@ function selectPlot(name) {
     vegaEmbed(mainEl, plotSpecs[name], {
       actions: true,
       renderer: 'canvas',
-      loader: { http: { headers: { 'Accept': 'application/vega-json' } } }
+      loader: { baseURL: window.location.origin, http: { headers: { 'Accept': 'application/vega-json' } } }
     });
   }
 }
@@ -125,6 +125,7 @@ function renderThumbnail(name, spec) {
   try {
     var vegaSpec = vegaLite.compile(spec).spec;
     var loader = vega.loader({
+      baseURL: window.location.origin,
       http: { headers: { 'Accept': 'application/vega-json' } }
     });
     var view = new vega.View(vega.parse(vegaSpec), { loader: loader })
@@ -171,8 +172,18 @@ fetch('/plot', { headers: { 'Accept': 'application/json' } })
           renderThumbnail(name, spec);
           loaded++;
           if (loaded === 1) { selectPlot(name); }
+        })
+        .catch(function(err) {
+          var el = document.getElementById('render-' + name);
+          if (el) el.innerHTML = '<div class=\"loading\">Error</div>';
+          console.error('Failed to load plot ' + name + ':', err);
         });
     });
+  })
+  .catch(function(err) {
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.innerHTML = '<div style=\"color:#ecf0f1;padding:1rem\">Error loading plots.</div>';
+    console.error('Failed to load plot list:', err);
   });
 
 var contextTarget = null;
@@ -427,5 +438,5 @@ Configures the Vega-Embed loader to send Accept: application/vega-json."
       (:div :id "vis")
       (:script
        (cl-who:str
-        (format nil "var spec = ~A;~%vegaEmbed('#vis', spec, {~%  actions: true,~%  loader: {~%    http: {~%      headers: {~%        'Accept': 'application/vega-json'~%      }~%    }~%  }~%});"
+        (format nil "var spec = ~A;~%vegaEmbed('#vis', spec, {~%  actions: true,~%  loader: {~%    baseURL: window.location.origin,~%    http: {~%      headers: {~%        'Accept': 'application/vega-json'~%      }~%    }~%  }~%});"
                 spec-json)))))))

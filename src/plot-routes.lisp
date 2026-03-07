@@ -24,6 +24,20 @@ Returns the plot object or NIL."
              vega:*all-plots*)
     (sort names #'string<)))
 
+;;; Helpers (continued)
+
+(defun rewrite-absolute-data-urls (spec-json)
+  "Rewrite absolute http[s]://localhost:PORT/PATH data URLs in SPEC-JSON to path-only.
+Ensures specs created while the server ran on one port continue to work
+when the server is restarted on a different port.
+Only rewrites localhost/127.0.0.1 URLs; external data sources are left unchanged.
+NOTE: Operates on the raw JSON string via regex; safe because Vega specs
+are ASCII/UTF-8 JSON without binary content."
+  (cl-ppcre:regex-replace-all
+   "\"https?://(?:localhost|127\\.0\\.0\\.1)(?::\\d+)?(/[^\"]+)\""
+   spec-json
+   "\"\\1\""))
+
 ;;; Handlers
 
 (defun handle-plot-list ()
@@ -45,10 +59,10 @@ Returns the plot object or NIL."
       (cond
         ((string= content-type "application/vega-json")
          (setf (hunchentoot:content-type*) "application/vega-json; charset=utf-8")
-         (vega:write-spec plot))
+         (rewrite-absolute-data-urls (vega:write-spec plot)))
         (t ; text/html (default)
          (setf (hunchentoot:content-type*) "text/html")
-         (vega-embed-page name (vega:write-spec plot)))))))
+         (vega-embed-page name (rewrite-absolute-data-urls (vega:write-spec plot))))))))
 
 (defun handle-plot-delete (name)
   "Handle DELETE /plot/<name> — remove plot from vega:*all-plots*.

@@ -331,3 +331,57 @@ The #main-plot container must not force width/height so VegaEmbed sizes to the p
   (let ((html (dex:get (test-url "/plot/test-plot")
                        :headers '(("Accept" . "text/html")))))
     (assert-true (search "rel='icon'" html))))
+
+;;; Tests — server-side URL rewriting for port independence
+
+(defun ensure-stale-url-plot ()
+  "Create a test plot whose spec contains an absolute localhost:20202 data URL.
+Simulates a plot created while the server was running on port 20202.
+NOTE: Uses vega::%defplot, an internal function from the vega package.
+This is fragile and may break if the vega package changes its internal API."
+  (unless (gethash "STALE-URL-PLOT" vega:*all-plots*)
+    (let* ((spec '(:mark :point
+                   :data (:url "http://localhost:20202/data/mtcars")
+                   :encoding (:x (:field "mpg" :type :quantitative)
+                              :y (:field "hp"  :type :quantitative))))
+           (plot (vega::%defplot 'stale-url-plot spec)))
+      (setf (gethash "STALE-URL-PLOT" vega:*all-plots*) plot))))
+
+(deftest plot-spec-absolute-localhost-url-rewritten (plot-suite)
+  "GET /plot spec response rewrites http://localhost:20202/PATH to /PATH."
+  (ensure-test-server)
+  (ensure-stale-url-plot)
+  (let* ((body (dex:get (test-url "/plot/stale-url-plot")
+                        :headers '(("Accept" . "application/vega-json"))))
+         (spec (yason:parse body))
+         (data (gethash "data" spec))
+         (data-url (gethash "url" data)))
+    (assert-false (search "localhost:20202" (or data-url ""))
+                  "Served spec must not contain stale absolute URL with port 20202")
+    (assert-equal "/data/mtcars" data-url)))
+
+(deftest plot-spec-relative-url-survives-rewrite (plot-suite)
+  "GET /plot spec response does not alter already-relative data URLs."
+  (ensure-test-server)
+  (ensure-url-test-plot)
+  (let* ((body (dex:get (test-url "/plot/url-test-plot")
+                        :headers '(("Accept" . "application/vega-json"))))
+         (spec (yason:parse body))
+         (data (gethash "data" spec))
+         (data-url (gethash "url" data)))
+    (assert-equal "/data/mtcars" data-url)))
+
+(deftest plot-html-page-has-base-url-loader (plot-suite)
+  "Plots SPA HTML includes baseURL: window.location.origin in Vega loader config."
+  (let ((html (ls-server:plots-index-page)))
+    (assert-true (search "window.location.origin" html))
+    (assert-true (search "baseURL" html))))
+
+(deftest plot-embed-page-has-base-url-loader (plot-suite)
+  "Individual plot embed page has baseURL: window.location.origin in vegaEmbed loader."
+  (ensure-test-server)
+  (ensure-test-plot)
+  (let ((html (dex:get (test-url "/plot/test-plot")
+                       :headers '(("Accept" . "text/html")))))
+    (assert-true (search "window.location.origin" html))
+    (assert-true (search "baseURL" html))))
