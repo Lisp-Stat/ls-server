@@ -1,0 +1,13 @@
+You are an expert in user interface design and the display of data. 
+
+There are some changes I want you to plan:
+
+1. The table editor does not have a way to save the data back to a data frame.  You can edit the data, but not save it.  Add buttons for saving, cancelling, etc.
+2. The plot page does not have an example. Create one using the scatterplot found at https://lisp-stat.dev/docs/cookbooks/plotting/#basic-1
+3. It does not look as if the side bar at /plots is graphical.  This should provide a thumbnail of the plot for the user to select and the main plot displayed to the right.  This is only for the /plots/ route, not individual pages.  The goal of this page is the allow the user to view and manage plots in the environment.  /plots/<plot-name> will render a single page with the plot. See examples/electron-screenshot.png for an example of how it should look.
+4. I want the thumbnail in the side bar to have a right-click menu that allows the user to delete the plot.
+5. I want you to brainstorm and provide me options for a right-click on the thumbnail to provide an 'edit plot' option.  This will edit the lisp source of the plot.  You may have to investigate the plot/vega source to to determine if the lisp form of the plot is saved. See https://github.com/Lisp-Stat/plot/tree/master/src.  If the lisp specification is not available from the plot object, STOP and skip this feature.
+6. I want you to modify the print-object function for data-frame and plot so that when printed they will append to the existing output the URL for the object on ls-server.  A data frame will point to the editable route and the plot object will print the URL for the direct plot page (without the side bar)
+
+Ask me clarifications questions before you begin planning.
+Your constructive critism is welcome.  Mention it in your queries to me for possible inclusion in the plan.

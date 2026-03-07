@@ -1,0 +1,38 @@
+1. Have the hunchentoot output go to a file instead of standard-output or standard-error.  Flag this so the user can turn it on/off.
+2. Create a ls-server-config.lisp file and place all options/feature flags there.
+3. Remove the sample plots.  I will arrange for one to be created in the users initialization file so it will automatically appear in the web page because it will be in vega::*all-plots*
+4. The thumbnails are not displaying
+5. I have downloaded ElectronDisplay.jl into /workspaces/.  Examine this and determine how they do their thumbnail
+6. Update the readme to reflect the new functionality.  Include examples of showing existing data-frames and plots and then print-object showing the URL.  Do one example for a data-frame and one for a plot.
+7. There is a bug in your printing of the URL. When I invoke print-object by typing the name of a data frame I don't see the URL.  In fact the behaviour has changed.  The OLD printing was:
+
+#<DATA-FRAME (32 observations of 12 variables)
+Motor Trend Car Road Tests>
+
+and NOW it prints:
+
+#<DATA-FRAME (32 observations of 12 variables)> Note that there is neither a docstring nor a URL.
+
+What we should see is:
+
+#<DATA-FRAME (32 observations of 12 variables)
+Motor Trend Car Road Tests
+http://localhost:20202/table/MTCARS>
+
+8. I am unable to view the data in the vgcars data set.  To reproduce this bug:
+
+(data :vgcars) ;load the data
+
+Now in a browser go to: http://localhost:20202/table/VGCARS
+
+observe that the table is empty.  The data can be downloaded, suggesting that the problem is in display.  Other tables are displayed.
+
+9. The data in the table sidebar is misaligned.  Do not display table and data links in the sidebar, only the data-frame name.
+10.  The thumbnails in the side bar of /plots has a lot of white space and they are of uneven sizes.  Follow the visual pattern of electron-display.jl
+
+
+Ask any clarifying questions you need to and begin create the plan.
+
+
+
+

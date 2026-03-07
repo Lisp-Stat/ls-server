@@ -1,0 +1,8 @@
+ls-server is an HTTP server for the Lisp-Stat system.  It provides several functions:
+
+1. Viewing plots created with the plot/vega system
+2. Viewing and editing data frames via HTTP
+3. Serving data-frame data in CSV and JSON format
+4. Serving vega lite plot specifications for already created plots
+
+It is based on Huchentoot HTTP server.  Each of the above functionality is available as a route.

@@ -1,0 +1,13 @@
+Several of these issues are still outstanding after several iterations. 
+
+1. . Incorrect print-object for data-frame and plot
+You need to slightly change the print object.  the trailing '>' needs a space before it so that the URL is correct for a browser to open it when clicked on.
+
+2. Bug: hunchentoot output still showing in REPL.
+After starting ls-server, the hunchentoot output is still visible in the REPL whenever there is activity on the server.  This should, optionally, go to a log file.  In most cases it is not useful and should only be available for debugging.  Perhaps hunchentoot is printing to a different stream?
+
+3. The thumbnails in the left sidebar are not rendering correctly.  It almost appears as if Vega-Lite is rendering them without data, or perhaps before the image is ready.  There is a screen shot at ls-server/examples/v6-screenshot.png. Carefully examine the electron-display source code again and ensure you are correctly obtaining the thumbnails.
+
+4. The VegaEmbed menu is still not displaying. You MUST keep this working, as it was a few versions ago.
+
+Ask clarification question if needed.  If there are tools that would help you in the implementation or in testing, list them at the end of your plan and I will install them prior to implementing the plan.

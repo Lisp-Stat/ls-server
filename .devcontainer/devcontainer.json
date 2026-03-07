@@ -1,0 +1,19 @@
+{
+  "name": "LS Server Dev Container",
+  "image": "ghcr.io/lisp-stat/ls-dev:latest",
+  "containerUser": "vscode",
+  "workspaceFolder": "/workspaces",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.copilot",
+        "github.copilot-chat"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}

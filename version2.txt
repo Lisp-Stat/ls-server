@@ -1,0 +1,34 @@
+You are an expert in user interface design and the display of data.
+
+There are some changes I want you to plan:
+
+1. When I request data without an HTTP accepts header, I get vega-json back.
+1a. Change this to default to CSV
+1b. Confirm that your tests include coverage for all content types, including s-expressions.  The test coverage for content negotiation is weak
+
+2. Using the README in the examples/directory as a template, create a readme for this repo.  Include instructions on how to start the server, config files, if any and a general description of the code. Your audience is a technical developer who is trying to get started modifying the system.
+
+3. The tables are printing decimals that are incorrect.  For example in the mtcars data frame, mpg column, AMC Javelin is 15.2, however is being printed as 15.199999809265137.  This is true for nearly all floating point numbers.
+
+4. The table pages should print the data-frame description, if any, from the documentation.  This may be obtained, for example in the case of mtcars with (documentation 'mtcars 'variable).  Be sure to display lengthy documentation like this in a manner that does not make the table or data frame page difficult to read.  Consider a pop-up to display this.  Use the mtcars and iris data frames for you examples, since they are the most complete.
+
+5. Your test plot produces no output.  You use vega-embed, but then don't embed a plot.
+
+6. Your testing strategy is incorrect. You are testing for things like the JSON schema, when these things are already tested for in the plot/vega tests.  You should be testing the basics of plot construction:
+
+6a. Does the HTML return proper vega-embed with the correct schema URL?  Retreive that URL and ensure it is the schema it is supposed to be.
+6b. The vega-lite schema will contain a data url.  Retreive that URL and ensure it contains the data we expect.
+
+Look at the plot/vega tests that I placed in the examples/tests directory to understand how the plot/vega/test system works.
+
+7. Reformat the landing page to look something like that found at https://github.com/queryverse/ElectronDisplay.jl see the screenshot at https://github.com/queryverse/ElectronDisplay.jl/blob/master/screenshot.png where there is a side bar with thumbnails for the plots.  If you need to create two top-level pages, one for plots and one for tables.
+
+8. I don't see any tests for data editing (PUT).  The datatable library allows users to edit data and then save them.
+8a. Ensure the datatables editor extention is included in the data page: https://editor.datatables.net/
+8b. Ensure that you can save edits to a data table back to a data frame.  You do not need to test the datatables editing functionality in the HTML page or editor, create a before and after PUT test fixture with the expected inputs/outputs. See https://lisp-stat.dev/docs/manuals/data-frame/#create-data-frames for how to create a data frame.
+
+
+
+I want you to make this easy for a data scientist to use.
+
+Ask any clarification questions required and plan these improvements and fixes.

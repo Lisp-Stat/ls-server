@@ -1,0 +1,2 @@
+1. The VegaEmbed menu is still not visible.
+2. Add a lisp icon for the page.  This icon displays in the position many corporate logos do on websites.

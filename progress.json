@@ -1,0 +1,204 @@
+{
+  "learnings": [
+    {
+      "id": 1,
+      "category": "pattern",
+      "storyId": "US-001",
+      "timestamp": "2026-03-04T08:45:00Z",
+      "learning": "The ls-server ASDF system uses a separate test subsystem ls-server/tests with :perform test-op calling (uiop:symbol-call :ls-server-tests :run-tests). The test package :uses both :cl and :clunit so clunit macros are available unqualified."
+    },
+    {
+      "id": 2,
+      "category": "pitfall",
+      "storyId": "US-002",
+      "timestamp": "2026-03-04T08:52:00Z",
+      "learning": "gethash returns multiple values (value, found-p). When used directly in assert-equal, the second value causes comparison to fail. Always bind the result in a let* first."
+    },
+    {
+      "id": 3,
+      "category": "pattern",
+      "storyId": "US-002",
+      "timestamp": "2026-03-04T08:52:00Z",
+      "learning": "Test server readiness: poll the /health endpoint in a retry loop instead of using sleep. Signal an error if the server fails to start after max attempts. Use unwind-protect in run-tests to guarantee teardown."
+    },
+    {
+      "id": 4,
+      "category": "pattern",
+      "storyId": "US-003",
+      "timestamp": "2026-03-04T08:54:00Z",
+      "learning": "Test helpers (ensure-test-server, stop-test-server, test-url) defined in health-tests.lisp are reusable across all test files loaded after it. Use ASDF :depends-on to ensure load order."
+    },
+    {
+      "id": 5,
+      "category": "pattern",
+      "storyId": "US-004",
+      "timestamp": "2026-03-04T08:57:00Z",
+      "learning": "Content negotiation tests are pure unit tests (no network). They can be in a separate suite without server setup, loaded before integration test files."
+    },
+    {
+      "id": 6,
+      "category": "pattern",
+      "storyId": "US-006",
+      "timestamp": "2026-03-04T09:01:00Z",
+      "learning": "Data routes use hunchentoot:create-regex-dispatcher + hunchentoot:*dispatch-table* for clean URL matching. The regex extracts the data frame name from /data/<name>. Content negotiation uses the Accept header via negotiate-content-type."
+    },
+    {
+      "id": 7,
+      "category": "pitfall",
+      "storyId": "US-006",
+      "timestamp": "2026-03-04T09:01:00Z",
+      "learning": "dexador signals dexador:http-request-not-found for 404 responses. Use handler-case or assert-condition in tests to verify 404 behavior."
+    },
+    {
+      "id": 8,
+      "category": "pattern",
+      "storyId": "US-009",
+      "timestamp": "2026-03-04T09:06:00Z",
+      "learning": "Vega-Embed loader configuration for custom Accept headers: vegaEmbed(selector, spec, {loader: {http: {headers: {Accept: application/vega-json}}}}) — this makes Vega fetch data URLs with the correct content type for the server."
+    },
+    {
+      "id": 9,
+      "category": "pattern",
+      "storyId": "US-008",
+      "timestamp": "2026-03-04T09:06:00Z",
+      "learning": "vega:write-spec is exported and returns a JSON string. vega:*all-plots* is exported and is a hash-table keyed by string-upcased plot names."
+    },
+    {
+      "id": 10,
+      "category": "pitfall",
+      "storyId": "US-011",
+      "timestamp": "2026-03-04T09:12:00Z",
+      "learning": "data-frame package has no dims or nrow export. Use (length (df:column df col-key)) to get row count. Check column existence by testing (df:column df key) for NIL before array access."
+    },
+    {
+      "id": 11,
+      "category": "pattern",
+      "storyId": "US-010",
+      "timestamp": "2026-03-04T09:12:00Z",
+      "learning": "DataTables JS can auto-detect columns from JSON array of objects. Use AJAX with dataSrc set to empty string for flat arrays."
+    },
+    {
+      "id": "L012",
+      "story": "US-012",
+      "detail": "Landing page lists data frames and plots with links. Reviewer confirmed push-to-dispatch-table pattern is consistent across all route files."
+    },
+    {
+      "id": 13,
+      "category": "pattern",
+      "storyId": "US-013",
+      "timestamp": "2026-03-05T02:10:00Z",
+      "learning": "To change the default content type for wildcard/absent Accept headers, reorder *data-supported-types* AND pass :default to negotiate-content-type. Dexador sends Accept: */* by default, which matches the first supported type."
+    },
+    {
+      "id": 14,
+      "category": "pitfall",
+      "storyId": "US-015",
+      "timestamp": "2026-03-05T02:15:00Z",
+      "learning": "Yason encodes floats by coercing to double-float then formatting with ~F. Single-floats lose precision in the coercion. Fix: specialize yason:encode on single-float with *read-default-float-format* bound to single-float. Uses yason::*json-output* (internal, fragile)."
+    },
+    {
+      "id": 15,
+      "category": "pattern",
+      "storyId": "US-022",
+      "timestamp": "2026-03-05T08:02:00Z",
+      "learning": "Handsontable batch editing: store originalRows on load, deep-copy via JSON.parse(JSON.stringify()) for both initial load and save snapshot. Save sends PUT with full row objects, Cancel calls hot.loadData() with originalRows copy."
+    },
+    {
+      "id": 16,
+      "category": "pattern",
+      "storyId": "US-023",
+      "timestamp": "2026-03-05T08:06:00Z",
+      "learning": "Example plots should use create-example-plots (exported, idempotent) rather than relying on load-time side effects. Tests call the function explicitly for self-containment. Use vega::%defplot with NOTE comment for fragility."
+    },
+    {
+      "id": 17,
+      "category": "pattern",
+      "storyId": "US-024",
+      "timestamp": "2026-03-05T08:09:00Z",
+      "learning": "SPA plot pages: fetch plot list from /plot (JSON), fetch each spec from /plot/<name> with Accept: application/vega-json, render small vegaEmbed thumbnails in sidebar, full-size in main panel on click. Use plotSpecs object to cache specs."
+    },
+    {
+      "id": 18,
+      "category": "pattern",
+      "storyId": "US-025",
+      "timestamp": "2026-03-05T08:12:00Z",
+      "learning": "DELETE handler pattern: add case to dispatcher for :delete method, use remhash to remove from hash-table. Context menus: use fixed-position div shown on contextmenu event, hide on document click. Create dedicated ensure-deletable-plot helper for test isolation."
+    },
+    {
+      "id": 19,
+      "category": "pitfall",
+      "storyId": "US-026",
+      "timestamp": "2026-03-05T08:17:00Z",
+      "learning": "vega::vega-plot is not exported from the vega package. Use the internal symbol with NOTE comment. df:name and df:data-frame ARE exported. slot-boundp requires the slot name symbol from the defining package (df:name). Use hunchentoot:acceptor-port to get the running server port."
+    },
+    {
+      "id": 20,
+      "timestamp": "2026-03-05T10:00:00Z",
+      "learning": "Hunchentoot easy-acceptor accepts :access-log-destination and :message-log-destination initargs. Values can be pathname strings, streams, or NIL (defaults to *error-output*). Pass conditionally with when/nconc in make-instance."
+    },
+    {
+      "id": 21,
+      "timestamp": "2026-03-05T10:10:00Z",
+      "learning": "vgcars has :NA symbol values in HORSEPOWER (6) and MILES-PER-GALLON (8). The yason:encode method for data-frame sets *symbol-key-encoder* but NOT *symbol-encoder*. Must bind yason:*symbol-encoder* to vega::encode-symbol-as-metadata for :NA → JSON null encoding."
+    },
+    {
+      "id": 22,
+      "timestamp": "2026-03-05T10:20:00Z",
+      "learning": "print-object :after methods fire AFTER print-unreadable-object prints closing >. Use :around methods to inject content inside #<...> output. Capture primary output with with-output-to-string, find last > with (position #\\> output :from-end t), inject before it."
+    },
+    {
+      "id": 23,
+      "timestamp": "2026-03-05T10:30:00Z",
+      "learning": "vegaEmbed into tiny divs is unreliable for thumbnails. Use the ElectronDisplay.jl approach: vegaLite.compile(spec).spec → new vega.View(vega.parse(vegaSpec)).renderer('none').initialize() → view.toImageURL('png') for static PNG data URLs displayed as <img> tags."
+    },
+    {
+      "id": 24,
+      "category": "pitfall",
+      "storyId": "US-034",
+      "timestamp": "2026-03-05T11:50:00Z",
+      "learning": "The yason:encode method for data-frame (in vega package) binds *symbol-key-encoder* but NOT *symbol-encoder*. Both must be bound in ALL encoding paths (GET JSON, GET vega-json, PUT response, PATCH response) to handle :NA symbol values. Use encode-symbol-for-vega consistently."
+    },
+    {
+      "id": 25,
+      "category": "pitfall",
+      "storyId": "US-035",
+      "timestamp": "2026-03-05T11:55:00Z",
+      "learning": "Plot specs that reference /table/<name> data URLs need content negotiation on the table endpoint. VegaEmbed sends Accept: application/vega-json via its loader config. Without content negotiation, the table handler returns HTML instead of JSON, causing blank plots. Check for text/html in Accept before delegating to avoid breaking browser requests."
+    },
+    {
+      "id": 26,
+      "category": "pitfall",
+      "storyId": "US-035",
+      "timestamp": "2026-03-05T11:55:00Z",
+      "learning": "Dexador returns octets (byte vectors) for some content types like application/vega-json. Use :force-string t in dex:get calls when you need string results for assertions like (search ...). Without it, (search string byte-vector) returns NIL."
+    },
+    {
+      "id": 27,
+      "category": "pitfall",
+      "storyId": "US-042",
+      "timestamp": "2026-03-05T14:10:00Z",
+      "learning": "VegaEmbed's .vega-actions dropdown uses position: absolute. When a parent has overflow: auto (e.g. .main-panel for scrolling), the dropdown gets clipped. Fix with overflow: visible on .vega-embed wrapper and z-index on .vega-actions. The individual plot page works fine because it has no custom CSS interfering with VegaEmbed defaults."
+    },
+    {
+      "id": 28,
+      "category": "pitfall",
+      "storyId": "US-043",
+      "timestamp": "2026-03-05T16:00:00Z",
+      "learning": "VegaEmbed v6 uses <details>/<summary> HTML pattern for its actions menu. The <summary> three-dot icon defaults to opacity: 0.2 — nearly invisible on white. Override with .vega-embed summary { opacity: 0.7 !important; }. VegaEmbed's own hover rule (.vega-embed:hover summary { opacity: 1 !important; }) still works."
+    },
+    {
+      "id": 29,
+      "category": "pitfall",
+      "storyId": "US-044",
+      "timestamp": "2026-03-05T16:00:00Z",
+      "learning": "CL-WHO uses single quotes for HTML attribute values (rel='icon' not rel=\"icon\"). Nested single quotes in attribute values (e.g. SVG data URIs) break CL-WHO output. URL-encode the entire SVG including special chars. Lambda (λ) URL-encodes to %CE%BB."
+    },
+    {
+      "id": 30,
+      "category": "pitfall",
+      "storyId": "US-045",
+      "timestamp": "2026-03-05T15:00:00Z",
+      "learning": "VegaEmbed positions its actions icon (three-dot menu) at the top-right of its container element. If the container has width: 100%; height: 100% (filling the whole page/panel), the icon ends up in the page corner, far from the plot. Remove forced sizing so the container matches the plot's natural dimensions — the icon then appears near the plot where users expect it."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+When I start lisp stat, I see the following error:
+
+LS-USER(13): 127.0.0.1 - [2026-03-05 08:53:20] "GET /tables HTTP/1.1" 200 3981 "http://localhost:20202/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+127.0.0.1 - [2026-03-05 08:53:22] "GET /table/VGCARS HTTP/1.1" 200 2639 "http://localhost:20202/tables" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0"
+[2026-03-05 08:53:22 [ERROR]] No policy for symbols as keys defined. Please check YASON:*SYMBOL-ENCODER*.
+Backtrace for: #<SB-THREAD:THREAD tid=35812 "hunchentoot-worker-127.0.0.1:59814" RUNNING {1204B45843}>
+0: (TRIVIAL-BACKTRACE:PRINT-BACKTRACE-TO-STREAM #<SB-IMPL::STRING-OUTPUT-STREAM {710758745E83}>)
+1: (HUNCHENTOOT::GET-BACKTRACE)
+2: ((LAMBDA (COND) :IN HUNCHENTOOT:HANDLE-REQUEST) #<SIMPLE-ERROR "No policy for symbols as keys defined. ~
+         Please check YASON:*SYMBOL-ENCODER*." {1206705A33}>)
+3: (SB-KERNEL::%SIGNAL #<SIMPLE-ERROR "No policy for symbols as keys defined. ~
+         Please check YASON:*SYMBOL-ENCODER*." {1206705A33}>)
+4: (ERROR "No policy for symbols as keys defined. ~
+         Please check YASON:*SYMBOL-ENCODER*.")
+5: (YASON::ENCODE-SYMBOL-ERROR #<unused argument>)
+6: ((:METHOD YASON:ENCODE (SYMBOL)) :NA #<SB-IMPL::STRING-OUTPUT-STREAM {710758746233}>) [fast-method]
+7: (YASON:ENCODE-PLIST ("origin" "USA" "year" "1982-01-01" "acceleration" 20.5d0 "weightInLbs" 3035 "horsepower" :NA "displacement" 151 "cylinders" 4 "milesPerGallon" 23 "name" "amc concord dl") #<SB-IMPL::STRING-OUTPUT-STREAM {710758746233}>)
+8: ((:METHOD YASON:ENCODE (VECTOR)) #((#1="origin" #2="USA" #3="year" #4="1982-01-01" #5="acceleration" 19.4d0 #6="weightInLbs" 2720 #7="horsepower" 82 #8="displacement" 119 #9="cylinders" 4 #10="milesPerGallon" 31 #11="name" "chevy s-10") (#1# #2# #3# #4# #5# 18.6d0 #6# 2625 #7# 79 #8# 120 #9# 4 #10# 28 #11# "ford ranger") (#1# #2# #3# #4# #5# 11.6d0 #6# 2295 #7# 84 #8# 135 #9# 4 #10# 32 #11# "dodge rampage") (#1# #12="Europe" #3# #4# #5# 24.6d0 #6# 2130 #7# 52 #8# 97 #9# 4 #10# 44 #11# "vw pickup") (#1# #2# #3# #4# #5# 15.6d0 #6# 2790 #7# 86 #8# 140 #9# 4 #10# 27 #11# "ford mustang gl") (#1# #2# #3# #4# #5# 17.3d0 #6# 2950 #7# 90 #8# 151 #9# 4 #10# 27 #11# "chevrolet camaro") (#1# #2# #3# #4# #5# 13 #6# 2370 #7# 84 #8# 135 #9# 4 #10# 36 #11# "dodge charger 2.2") (#1# #13="Japan" #3# #4# #5# 13.9d0 #6# 2665 #7# 96 #8# 144 #9# 4 #10# 32 #11# "toyota celica gt") (#1# #2# #3# #4# #5# 14.7d0 #6# 2835 #7# 112 #8# 232 #9# 6 #10# 22 #11# "ford granada l") (#1# #2# #3# #4# #5# 14.5d0 #6# 2585 #7# 92 #8# 156 #9# 4 #10# 26 #11# "chrysler lebaron 
+
+The data printed is from the vgcars data set and it occurs because I have (data :vgcars) in my initialization file:
+
+(ql:quickload :plot/vega)
+(data :vgcars)
+(vega:defplot hp-mpg
+ `(:title "Horsepower vs. MPG"
+   :data (:url ,(quri:uri "http://localhost:20202/table/VGCARS"))
+   :mark :point
+   :encoding (:x (:field :horsepower :type "quantitative")
+              :y (:field :miles-per-gallon :type "quantitative"))))
+
+
+2. the hp-mpg plot of vgcars data does not work, it is blank.
+3. The three elipses that previously appeared as a menu in VegaEmbed no longer appear.  This prevents me from debugging or saving the plot.  It must be restored.
+4. The size of the side bar should be configurable (i.e. resized) if it is possible to do this in electrondisplay.jl
