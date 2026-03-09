@@ -76,12 +76,12 @@
 LS-Server is an HTTP server for the [Lisp-Stat](https://lisp-stat.dev/) system, based on the [Hunchentoot](https://edicl.github.io/hunchentoot/) HTTP server.  It provides four capabilities:
 
 1. **Plot viewing** — serve plots created with the `plot/vega` system as interactive Vega-Embed pages, with a single-page application (SPA) plot gallery featuring PNG thumbnails and a sidebar navigator
-2. **Data frame viewing and editing** — view data frames in an editable [Handsontable](https://handsontable.com/) grid with batch Save/Cancel editing
+2. **Data frame viewing and editing** — view data frames in an editable [Handsontable](https://handsontable.com/) grid with batch editing
 3. **CSV / JSON data serving** — serve data-frame contents in CSV, JSON, Vega-JSON, or s-expression format via Accept header content negotiation
 4. **Vega-Lite spec serving** — serve Vega-Lite plot specifications for existing plots
 5. **REPL integration** — when the server is running, `print-object` displays clickable URLs for data frames and plots
 
-Content negotiation is used throughout: clients request specific formats via the `Accept` header, and the server responds with the best matching format.
+Content negotiation is used to provide the best matching format.  For example a client can request a data-frame in CSV or Vega JSON format.  CSV is the default for data.
 
 
 ### Built With
@@ -103,7 +103,13 @@ Content negotiation is used throughout: clients request specific formats via the
 * [SBCL](https://www.sbcl.org/) (Steel Bank Common Lisp)
 * [Quicklisp](https://www.quicklisp.org/beta/) for dependency management
 
-### Installation
+### Quicklisp Installation
+
+```lisp
+(ql:quickload :ls-server
+```
+
+### Source Installation
 
 1. Clone the repository into a directory ASDF knows about:
 ```sh
@@ -118,7 +124,7 @@ git clone https://github.com/Lisp-Stat/ls-server.git
 
 3. Load the system and its dependencies:
 ```lisp
-(ql:quickload :ls-server)
+(ql:quickload :ls-server) ;get dependices via quicklisp
 ```
 
 
@@ -145,7 +151,7 @@ Stop the server:
 
 Once started, open `http://localhost:20202/` in a browser to see the landing page with links to plots and data frames.
 
-### REPL integration
+### Print-object update
 
 When the server is running, `print-object` automatically appends URLs to data frame and plot output:
 
@@ -160,16 +166,29 @@ LS-USER> my-plot
 http://localhost:20202/plot/my-plot>
 ```
 
+Depending on your terminal, you may be able to click on the link directly and open it.
+
 ### Loading example data
 
 Load the Lisp-Stat example datasets to have data frames available:
 
 ```lisp
 (ql:quickload :lisp-stat)
-(ls-user:setup)
+(ql:quickload :quick-plot)
+(data :vgcars)
+```
+This loads standard datasets like `mtcars` and `iris` which are then accessible through the server's data and table endpoints.
+
+Now create a plot:
+
+```lisp
+(qplot 'cars-basic vgcars
+  `(:title "Horsepower vs. MPG")
+   (point :horsepower :miles-per-gallon))
 ```
 
-This loads standard datasets like `mtcars` and `iris` which are then accessible through the server's data and table endpoints.
+You should see several data sets in the web interface.
+
 
 
 <!-- API ENDPOINTS -->
@@ -286,21 +305,14 @@ Example — redirect logs to files:
 Run all tests:
 
 ```sh
-sbcl --non-interactive \
-  --eval '(ql:quickload :ls-server :silent t)' \
-  --eval '(ql:quickload :clunit2 :silent t)' \
-  --eval '(asdf:test-system "ls-server")'
+(asdf:test-system "ls-server")
 ```
 
 Run a specific test suite:
 
 ```sh
-sbcl --non-interactive \
-  --eval '(ql:quickload :ls-server :silent t)' \
-  --eval '(ql:quickload :clunit2 :silent t)' \
-  --eval '(asdf:load-system :ls-server/tests)' \
-  --eval '(let ((clunit:*test-output-stream* *standard-output*))
-           (clunit:run-suite (quote ls-server-tests::data-suite) :report-progress t))'
+(let ((clunit:*test-output-stream* *standard-output*))
+           (clunit:run-suite ('ls-server-tests::data-suite) :report-progress t))
 ```
 
 The test framework is [clunit2](https://github.com/tgutu/clunit2).  Integration tests start a test server on port 20293 and use [Dexador](https://github.com/fukamachi/dexador) for HTTP requests.
