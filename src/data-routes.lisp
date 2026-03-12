@@ -30,7 +30,7 @@ the default for wildcard and absent Accept headers.")
   "Handle GET /data — return JSON array of data frame names."
   (setf (hunchentoot:content-type*) "application/json")
   (with-output-to-string (s)
-    (yason:encode (coerce (df:list-data-frames) 'vector) s)))
+    (yason:encode (map 'vector #'symbol-name (df:data-frame-symbols)) s)))
 
 (defun handle-data-get (name)
   "Handle GET /data/<name> — serve data frame with content negotiation."
@@ -163,3 +163,16 @@ Routes GET, PUT, and PATCH methods. Returns a handler function or NIL."
 
 ;;; Register dispatcher
 (push 'data-dispatcher hunchentoot:*dispatch-table*)
+
+;;; Future enhancement
+#+nil
+(defun handle-data-delete (name)
+  "Handle DELETE /data/<n> — remove data frame by name."
+  (handler-case
+      (progn
+        (df:undef name)   ; string form — no find-data-frame call needed
+        (setf (hunchentoot:content-type*) "application/json")
+        "{\"status\":\"deleted\"}")
+    (error (e)
+      (setf (hunchentoot:return-code*) 404)
+      (format nil "{\"error\":\"~A\"}" e))))

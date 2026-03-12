@@ -1,10 +1,10 @@
-;;; -*- Mode: LISP; Base: 10; Syntax: ANSI-Common-lisp; Package: ASDF -*-
+;;; -*- Mode: LISP; Syntax: ANSI-Common-lisp; Package: ASDF -*-
 ;;; Copyright (c) 2026 by Symbolics Pte. Ltd. All rights reserved.
 ;;; SPDX-License-identifier: MS-PL
 
 (defsystem "ls-server"
   :name "LS-Server"
-  :version "0.1.0"
+  :version "1.0.2"
   :license :MS-PL
   :author "Steve Nunez <steve@symbolics.tech>"
   :description "HTTP server for the Lisp-Stat system"

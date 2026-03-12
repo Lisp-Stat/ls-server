@@ -13,7 +13,7 @@
 
 (defun landing-page ()
   "Generate the landing page HTML with links to plots and tables index pages."
-  (let ((data-frames (df:list-data-frames))
+  (let ((data-frames (df:data-frame-symbols))
         (plots (list-plots)))
     (cl-who:with-html-output-to-string (s nil :prologue t :indent t)
       (:html
@@ -32,6 +32,39 @@
           (:h2 "Tables")
           (:p (cl-who:str (format nil "~D data frame~:P available"
                                   (length data-frames)))))))))))
+
+(defparameter *index-css*
+  "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         margin: 0; padding: 0; color: #333; background: #f5f5f5; }
+h1 { padding: 1rem 2rem; margin: 0; background: #2c3e50; color: #fff; }
+.hub { display: flex; gap: 2rem; padding: 2rem; justify-content: center; }
+.hub-card { display: block; padding: 2rem 3rem; background: #fff; border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; color: #333;
+            transition: box-shadow 0.2s; }
+.hub-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.hub-card h2 { margin: 0 0 0.5rem; color: #2c3e50; }
+.hub-card p { margin: 0; color: #666; }
+.container { display: flex; min-height: calc(100vh - 3.5rem); }
+.sidebar { width: 240px; background: #2c3e50; color: #ecf0f1; padding: 1rem;
+           overflow-y: auto; }
+.sidebar h2 { margin: 0 0 1rem; font-size: 1.1rem; }
+.sidebar ul { list-style: none; padding: 0; margin: 0; }
+.sidebar li { margin: 0.3rem 0; }
+.sidebar a { color: #ecf0f1; text-decoration: none; }
+.sidebar a:hover { color: #3498db; }
+.back-link { display: block; margin-bottom: 1rem; font-size: 0.9rem; color: #bdc3c7 !important; }
+.content { flex: 1; padding: 2rem; }
+.content h1 { background: none; color: #333; padding: 0; margin: 0 0 1.5rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+             gap: 1rem; }
+.card { display: block; padding: 1.5rem; background: #fff; border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; color: #333;
+        transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.card h3 { margin: 0 0 0.5rem; color: #2c3e50; }
+.card p { margin: 0; font-size: 0.9rem; }
+.card p a { color: #3498db; }"
+  "Shared CSS for index and landing pages.")
 
 (defparameter *plots-spa-css*
   "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -253,7 +286,7 @@ document.addEventListener('mouseup', function() {
 
 (defun tables-index-page ()
   "Generate the tables index page with a sidebar listing all data frames."
-  (let ((data-frames (df:list-data-frames)))
+  (let ((data-frames (df:data-frame-symbols)))
     (cl-who:with-html-output-to-string (s nil :prologue t :indent t)
       (:html
        (:head
@@ -291,38 +324,7 @@ document.addEventListener('mouseup', function() {
               (cl-who:htm
                (:p "No data frames have been loaded yet."))))))))))
 
-(defparameter *index-css*
-  "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-         margin: 0; padding: 0; color: #333; background: #f5f5f5; }
-h1 { padding: 1rem 2rem; margin: 0; background: #2c3e50; color: #fff; }
-.hub { display: flex; gap: 2rem; padding: 2rem; justify-content: center; }
-.hub-card { display: block; padding: 2rem 3rem; background: #fff; border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; color: #333;
-            transition: box-shadow 0.2s; }
-.hub-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.hub-card h2 { margin: 0 0 0.5rem; color: #2c3e50; }
-.hub-card p { margin: 0; color: #666; }
-.container { display: flex; min-height: calc(100vh - 3.5rem); }
-.sidebar { width: 240px; background: #2c3e50; color: #ecf0f1; padding: 1rem;
-           overflow-y: auto; }
-.sidebar h2 { margin: 0 0 1rem; font-size: 1.1rem; }
-.sidebar ul { list-style: none; padding: 0; margin: 0; }
-.sidebar li { margin: 0.3rem 0; }
-.sidebar a { color: #ecf0f1; text-decoration: none; }
-.sidebar a:hover { color: #3498db; }
-.back-link { display: block; margin-bottom: 1rem; font-size: 0.9rem; color: #bdc3c7 !important; }
-.content { flex: 1; padding: 2rem; }
-.content h1 { background: none; color: #333; padding: 0; margin: 0 0 1.5rem; }
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-             gap: 1rem; }
-.card { display: block; padding: 1.5rem; background: #fff; border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; color: #333;
-        transition: box-shadow 0.2s; }
-.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.card h3 { margin: 0 0 0.5rem; color: #2c3e50; }
-.card p { margin: 0; font-size: 0.9rem; }
-.card p a { color: #3498db; }"
-  "Shared CSS for index and landing pages.")
+
 (defparameter *table-css*
   ".toolbar { padding: 0.5rem 0; display: flex; gap: 0.5rem; align-items: center; }
 .toolbar button { padding: 0.4rem 1.2rem; border: 1px solid #ccc; border-radius: 4px;
